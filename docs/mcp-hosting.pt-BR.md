@@ -24,11 +24,20 @@ Os testes usam o runtime local `workerd`, um D1 isolado e um cliente MCP TypeScr
 
 ## Preparar recursos e credenciais
 
+**Diretório de execução:** o projeto npm fica em `mcp-worker/`, não na raiz do repositório. A partir da raiz, entre nessa pasta e instale as dependências:
+
+```sh
+cd mcp-worker
+npm ci
+```
+
+Se já estiver em `mcp-worker/`, não repita o `cd`. Execute os comandos `npm run` e `npx wrangler` desta seção nessa pasta, onde estão `package.json` e `wrangler.toml`.
+
 1. Entre na conta Cloudflare que administrará o serviço: `npx wrangler login`.
 2. Crie o banco D1: `npx wrangler d1 create az900-tutor-progress`.
-3. Copie o `database_id` retornado para `mcp-worker/wrangler.toml`, substituindo `REPLACE_WITH_D1_DATABASE_ID`.
+3. Copie o `database_id` retornado para `wrangler.toml` (`mcp-worker/wrangler.toml`, visto da raiz), substituindo `REPLACE_WITH_D1_DATABASE_ID`.
 4. Atualize `PUBLIC_BASE_URL` com o endereço HTTPS final do Worker, por exemplo `https://az-900-tutor-mcp.<subdominio>.workers.dev`.
-5. Aplique as migrações: `npm run migrate:remote`.
+5. Aplique as migrações do D1, ainda em `mcp-worker/`: `npm run migrate:remote`.
 6. No Google Cloud Console, crie um cliente OAuth do tipo **Web application**. Adicione exatamente `<PUBLIC_BASE_URL>/oauth/google/callback` como URI de redirecionamento autorizado. Configure a tela de consentimento para o público pretendido. O escopo solicitado é somente `openid`.
 7. Cadastre os segredos diretamente no Wrangler, sem colocá-los no Git:
 
@@ -40,9 +49,21 @@ Os testes usam o runtime local `workerd`, um D1 isolado e um cliente MCP TypeScr
 
    Os dois primeiros valores vêm do Google. Gere o último com pelo menos 32 bytes aleatórios; por exemplo, `openssl rand -base64 48`.
 
-8. Publique: `npm run deploy`.
+8. Publique, ainda em `mcp-worker/`: `npm run deploy`.
 
 Não use HTTP em produção. Os valores locais do `wrangler.toml` não são configuração OAuth de produção.
+
+### Erro `ENOENT` ao executar a migração
+
+Se o npm reclamar que não encontrou `az-900-tutor/package.json`, você executou o script na raiz do repositório. O script `migrate:remote` está definido em `mcp-worker/package.json`. A partir da raiz, execute:
+
+```sh
+cd mcp-worker
+npm ci
+npm run migrate:remote
+```
+
+Como alternativa, a partir da raiz, use `npm --prefix mcp-worker run migrate:remote`. Isso resolve o diretório de execução, mas o D1 ainda precisa ter sido criado e o `database_id` configurado conforme os passos anteriores.
 
 ## Verificar antes de compartilhar
 
@@ -72,7 +93,7 @@ Respostas e equívocos podem ser dados pessoais. Obtenha autorização antes de 
 
 Não registre corpos de requisição, tokens, respostas ou saídas de ferramentas em logs. A Cloudflare e administradores autorizados da conta fazem parte da fronteira de confiança. Restrinja acesso à conta e ao D1. Exports contêm dados de aprendizagem e devem ficar em local privado. A integridade detecta alterações acidentais; não autentica uma alegação de aprendizagem.
 
-Mantenha migrações aditivas e compatíveis. Aplique `npm run migrate:remote` antes de publicar código que dependa de uma migração. Para voltar o Worker, use `npx wrangler rollback [VERSION_ID]`. Isso não desfaz migrações nem restaura dados apagados; corrija o esquema com uma migração posterior. Rotacionar `TOKEN_SIGNING_SECRET` exige reautorização porque invalida tokens existentes.
+Mantenha migrações aditivas e compatíveis. A partir de `mcp-worker/`, aplique `npm run migrate:remote` antes de publicar código que dependa de uma migração. Para voltar o Worker, use `npx wrangler rollback [VERSION_ID]`. Isso não desfaz migrações nem restaura dados apagados; corrija o esquema com uma migração posterior. Rotacionar `TOKEN_SIGNING_SECRET` exige reautorização porque invalida tokens existentes.
 
 O serviço não usa Vectorize, Durable Objects, KV, RAG nem chamadas pagas a modelos. Confira os [preços atuais da Cloudflare Workers e D1](https://developers.cloudflare.com/workers/platform/pricing/) antes de estimar orçamento.
 
