@@ -27,11 +27,20 @@ npm run dev
 
 ## Create Cloudflare resources
 
+**Working directory:** the npm project lives in `mcp-worker/`, not in the repository root. From the repository root, enter the directory and install dependencies:
+
+```sh
+cd mcp-worker
+npm ci
+```
+
+If you are already in `mcp-worker/`, do not repeat `cd`. Run the `npm run` and `npx wrangler` commands in this section from that directory, which contains `package.json` and `wrangler.toml`.
+
 1. Authenticate Wrangler with an account you control: `npx wrangler login`.
 2. Create the D1 database: `npx wrangler d1 create az900-tutor-progress`.
-3. Copy the returned `database_id` into `mcp-worker/wrangler.toml` in place of `REPLACE_WITH_D1_DATABASE_ID`.
+3. Copy the returned `database_id` into `wrangler.toml` (`mcp-worker/wrangler.toml` relative to the repository root) in place of `REPLACE_WITH_D1_DATABASE_ID`.
 4. Set `PUBLIC_BASE_URL` to the final HTTPS Worker URL, such as `https://az-900-tutor-mcp.<account-subdomain>.workers.dev`, in `[vars]`.
-5. Apply migrations: `npm run migrate:remote`.
+5. Apply D1 migrations, still from `mcp-worker/`: `npm run migrate:remote`.
 6. Create a Google OAuth 2.0 **Web application** client in Google Cloud Console. Add this exact authorized redirect URI: `<PUBLIC_BASE_URL>/oauth/google/callback`. Configure the consent screen for the intended audience. The app requests only the `openid` identity scope.
 7. Set secrets without committing them:
 
@@ -43,10 +52,22 @@ npm run dev
 
    Generate `TOKEN_SIGNING_SECRET` with a cryptographically random value of at least 32 bytes, for example `openssl rand -base64 48`. `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` are values issued by Google.
 
-8. Deploy: `npm run deploy`.
+8. Deploy, still from `mcp-worker/`: `npm run deploy`.
 9. Verify the two metadata URLs and `POST /mcp` returning `401` with a `resource_metadata` challenge. Complete a full Google consent and MCP client test before sharing the endpoint with students.
 
 Do not set a production URL to HTTP. The local-only development values in `wrangler.toml` are not production OAuth settings.
+
+### `ENOENT` when running migrations
+
+If npm reports that it cannot find `az-900-tutor/package.json`, you ran the script from the repository root. `migrate:remote` is defined in `mcp-worker/package.json`. From the repository root, run:
+
+```sh
+cd mcp-worker
+npm ci
+npm run migrate:remote
+```
+
+Alternatively, run `npm --prefix mcp-worker run migrate:remote` from the repository root. This fixes the working directory, but you still must create the D1 database and configure its `database_id` as described above.
 
 ## Connect a client
 
@@ -64,8 +85,8 @@ A model may fail to invoke `record_assessment`, may send an inaccurate score, or
 
 ## Operations and rollback
 
-- Keep migrations additive and backward-compatible. Apply them with `npm run migrate:remote` before deploying code that depends on them.
-- Review CI before deployment. `npm run typecheck`, `npm test`, `python scripts/validate.py`, and the Python unittest suite are separate checks.
+- Keep migrations additive and backward-compatible. Apply them with `npm run migrate:remote` from `mcp-worker/` before deploying code that depends on them.
+- Review CI before deployment. Run `npm run typecheck` and `npm test` from `mcp-worker/`; run `python scripts/validate.py` and the Python unittest suite from the repository root. These are separate checks.
 - Roll back Worker code with `npx wrangler rollback [VERSION_ID]`. A Worker rollback does not reverse D1 migrations or restore deleted data. Preserve a tested older Worker version and use a forward D1 migration to repair data/schema issues.
 - Delete a student's progress only through their authenticated tool call or a verified operator request. Never use real student records for acceptance tests.
 - Rotate `TOKEN_SIGNING_SECRET` with a planned reauthorization because rotation invalidates existing access tokens. Rotate Google credentials in Google Cloud Console and Wrangler.
