@@ -1,5 +1,7 @@
 # Hospedar e conectar o MCP remoto
 
+Consulte a [matriz de compatibilidade](mcp-compatibility.md). A tentativa no Claude está bloqueada na autorização via CIMD; OAuth, ferramentas e persistência nesse cliente ainda não foram validados.
+
 O MCP hospedado mantém o progresso entre conversas e clientes compatíveis. O toolkit local continua disponível sem conta ou serviço remoto. O modelo de IA roda no cliente MCP do estudante; o Worker não chama um provedor de modelos.
 
 ## O que o serviço armazena

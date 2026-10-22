@@ -1,5 +1,7 @@
 # Using AZ-900 Tutor
 
+See the [client compatibility matrix](mcp-compatibility.md) for observed results and untested steps. Claude is currently blocked at CIMD authorization; OAuth, tool calls and persistence in Claude are not validated.
+
 You can study conceptually without an Azure account. Use English or Portuguese; the bank currently contains Portuguese prompts that the tutor may translate. An agent must actually read the files: a repository URL alone does not guarantee that a chatbot imports its contents.
 
 ## A. Hosted MCP across conversations

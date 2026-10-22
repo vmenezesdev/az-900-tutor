@@ -56,6 +56,8 @@ nav:
       - Curriculum and coverage: completion-matrix.md
       - Validation and limitations: validation.md
   - Hosted MCP:
+      - Client compatibility: mcp-compatibility.md
+      - MCP validation attempt (2026-10-22): validation/mcp-2026-10-22.md
       - English setup and operations: mcp-hosting.md
       - Configuração e operação (PT-BR): mcp-hosting.pt-BR.md
       - Architecture: architecture.md

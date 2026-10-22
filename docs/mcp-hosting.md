@@ -1,5 +1,7 @@
 # Hosted AZ-900 Tutor MCP
 
+See the [client compatibility matrix](mcp-compatibility.md) for observed results and untested steps. Claude is currently blocked at CIMD authorization; OAuth, tool calls and persistence in Claude are not validated.
+
 The hosted path adds automatic continuity across conversations and MCP clients. The original local toolkit remains supported and does not require an account or cloud service.
 
 ## What runs where

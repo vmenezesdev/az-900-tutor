@@ -1,5 +1,7 @@
 # Como usar o AZ-900 Tutor
 
+Consulte a [matriz de compatibilidade](mcp-compatibility.md). A tentativa no Claude está bloqueada na autorização via CIMD; OAuth, ferramentas e persistência nesse cliente ainda não foram validados.
+
 Você pode estudar conceitos sem criar uma conta Azure. O tutor ensina em português e preserva os nomes oficiais dos serviços. Enviar apenas o endereço do repositório não garante que um chatbot tenha lido seus arquivos.
 
 ## A. MCP hospedado entre conversas
