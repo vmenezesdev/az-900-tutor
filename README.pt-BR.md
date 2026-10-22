@@ -1,5 +1,7 @@
 # AZ-900 Tutor
 
+Consulte a [matriz de compatibilidade](docs/mcp-compatibility.md): a tentativa no Claude falhou na autorização via CIMD. OAuth, ferramentas e persistência nesse cliente ainda não foram validados.
+
 [English](README.md) · [Documentação](https://vmenezesdev.github.io/az-900-tutor/) · [MCP hospedado](docs/mcp-hosting.pt-BR.md) · [Como usar](docs/usage.pt-BR.md) · [Recursos](resources/README.md)
 
 Um kit aberto que ajuda agentes de IA a ensinar Azure Fundamentals com currículo
